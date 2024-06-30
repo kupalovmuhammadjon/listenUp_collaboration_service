@@ -6,8 +6,8 @@ service Collaborations {
     rpc CreateInvitation(CreateInvite) returns (ID);
     rpc RespondInvitation(CreateCollaboration) returns (ID);
     rpc GetCollaboratorsByPodcastId(ID) returns (Collaborator);
-    rpc UpdateCollaboratorByPodcastId(ID) returns (Void);
-    rpc DeleteCollaboratorByPodcastId(ID) returns (Void);
+    rpc UpdateCollaboratorByPodcastId(UpdateCollaborator) returns (Void);
+    rpc DeleteCollaboratorByPodcastId(Ids) returns (Void);
 }
 
 message CreateInvite{
@@ -19,9 +19,13 @@ message CreateInvite{
 message ID {
     string id = 1;
 }
+message Ids {
+    string PodcastId = 1;
+    string UserId = 2;
+}
 
 message CreateCollaboration{
-    string role = 1;
+    string status = 1;
     CreateInvite invitation = 2;
 }
 
@@ -29,7 +33,20 @@ message Collaborator{
     string username = 1;
     string email = 2;
     string role = 3;
+    string joined_at = 4;
 }
 
 message Void{
+}
+
+message CollaboratorToGet{
+    string user_id = 1;
+    string role = 2;
+    string joined_at = 3;
+}
+
+message UpdateCollaborator{
+    string podcast_id = 1;
+    string user_id = 2;
+    string role = 3;
 }
