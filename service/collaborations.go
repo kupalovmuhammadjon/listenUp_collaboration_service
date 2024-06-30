@@ -21,8 +21,9 @@ func NewCollaborations(db *sql.DB, client pbU.UserManagementClient) *Collaborati
 		Client: client}
 }
 
-func (c *Collaborations) GetCollaboratorsByPodcastId(ctx context.Context, id *pb.ID) (*[]*pb.Collaborator, error) {
-	collaborators := []*pb.Collaborator{}
+
+func (c *Collaborations) GetCollaboratorsByPodcastId(ctx context.Context, id *pb.ID) (*pb.Collaborators, error) {
+	res := pb.Collaborators{}
 
 	collaboratorsId, err := c.Repo.GetCollaboratorsByPodcastId(id.Id)
 	if err != nil {
@@ -40,9 +41,9 @@ func (c *Collaborations) GetCollaboratorsByPodcastId(ctx context.Context, id *pb
 			Role:     col.Role,
 			JoinedAt: col.JoinedAt,
 		}
-		collaborators = append(collaborators, &colaborator)
+		res.Collaborators = append(res.Collaborators, &colaborator)
 	}
-	return &collaborators, nil
+	return &res, nil
 }
 
 func (c *Collaborations) DeleteCollaboratorByPodcastId(ctx context.Context, req *pb.Ids) (*pb.Void, error) {
