@@ -4,7 +4,7 @@ VALUES
     ('2c2c76f8-1a4b-4f30-bb0f-83ef9e90b4b0', NULL, NULL, 'collaborator', '2024-06-30 13:00:00'),
     ('3eacdd6d-d52f-463f-b5b7-eb0b2f68b675', NULL, NULL, 'collaborator', '2024-06-30 14:00:00'),
     ('4a265f15-4c95-4b5f-8dbb-1e0c5c98d4a2', NULL, NULL, 'collaborator', '2024-06-30 15:00:00'),
-    ('5b9b3c60-35f8-41e3-b38a-5a30839d4304', NULL, NULL, 'collaborator', '2024-06-30 16:00:00'),
+    ('5b9b3c60-35f8-41e3-b38a-5a30839d4304', NULL, NULL, 'owner', '2024-06-30 16:00:00'),
     ('6d9e82fe-dfe0-43d2-ae69-91e32a5e2677', NULL, NULL, 'collaborator', '2024-06-30 17:00:00'),
     ('7fcfa9a1-50cc-4b63-ae85-2d47d3be5e9c', NULL, NULL, 'collaborator', '2024-06-30 18:00:00'),
     ('8e9f4b94-3a5a-4d6f-af20-837a2b0bdf4e', NULL, NULL, 'collaborator', '2024-06-30 19:00:00'),
