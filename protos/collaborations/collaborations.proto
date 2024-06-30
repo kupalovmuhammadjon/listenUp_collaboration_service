@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option go_package = "genproto/collaborations";
+
+service Collaborations {
+    rpc CreateInvitation(CreateInvite) returns (ID);
+    rpc RespondInvitation(CreateCollaboration) returns (ID);
+    rpc GetCollaboratorsByPodcastId(ID) returns (Collaborator);
+    rpc UpdateCollaboratorByPodcastId(ID) returns (Void);
+    rpc DeleteCollaboratorByPodcastId(ID) returns (Void);
+}
+
+message CreateInvite{
+    string podcast_id = 1;
+    string inviter_id = 2;
+    string invitee_id = 3;
+}
+
+message ID {
+    string id = 1;
+}
+
+message CreateCollaboration{
+    string role = 1;
+    CreateInvite invitation = 2;
+}
+
+message Collaborator{
+    string username = 1;
+    string email = 2;
+    string role = 3;
+}
+
+message Void{
+}
