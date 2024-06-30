@@ -4,7 +4,7 @@ option go_package = "genproto/comments";
 
 service Comments {
     rpc CreateCommentByPodcastId(CreateComment) returns (ID);
-    rpc GetCommentsByPodcastId(ID) returns (Comment);
+    rpc GetCommentsByPodcastId(ID) returns (AllComments);
 }
 
 message CreateComment{
@@ -29,4 +29,8 @@ message Comment{
   string content = 3;
   string created_at = 4;
   string updated_at = 5;
+}
+
+message AllComments{
+  repeated Comment comments = 1;
 }

@@ -34,7 +34,7 @@ func main() {
 	}
 
 	pbCollab.RegisterCollaborationsServer(server, service.NewCollaborations(db, userClient))
-	pbCom.RegisterCommentsServer(server, service.NewComments(db))
+	pbCom.RegisterCommentsServer(server, service.NewComments(db, &userClient))
 
 	fmt.Printf("server is listening on port %s", config.Load().COLLABORATION_SERVICE_PORT)
 	if err := server.Serve(lis); err != nil {

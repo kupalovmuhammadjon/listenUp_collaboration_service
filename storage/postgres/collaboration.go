@@ -44,15 +44,15 @@ func (c *CollaborationRepo) UpdateCollaboratorByPodcastId(clb *pb.UpdateCollabor
 
 	query := `
 	update 
-	    set
-	     	podcast_id = $1,
-	    	user_id = $2, 
-	    	role = $3
+		set
+		   podcast_id = $1,
+		  user_id = $2, 
+		  role = $3
 	from
-	    collaborations
+		collaborations
 	where
-	    id = $4
-`
+		id = $4
+  `
 	tx, err := c.Db.Begin()
 	if err != nil {
 		return err
@@ -97,9 +97,9 @@ func (c *CollaborationRepo) DeleteCollaboratorByPodcastId(ids *pb.Ids) (*pb.Void
 func (c *CollaborationRepo) CreateInvitation(invitation *pb.CreateInvite) (string, error) {
 	query := `
 	insert into 
-		invitations (id, podcast_id, inviter_id, invitee_id)
+	  invitations (id, podcast_id, inviter_id, invitee_id)
 	values ($1, $2, $3, $4)
-  `
+	`
 	tx, err := c.Db.Begin()
 	if err != nil {
 		return "", err
