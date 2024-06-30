@@ -1,4 +1,4 @@
-CREATE TYPE collaboration_role AS ENUM ('owner', 'collaborator', 'viewer');
+CREATE TYPE collaboration_role AS ENUM ('owner', 'collaborator');
 CREATE TYPE invitation_status AS ENUM ('pending', 'accepted', 'declined');
 
 CREATE TABLE collaborations (
@@ -6,7 +6,9 @@ CREATE TABLE collaborations (
     podcast_id uuid,
     user_id uuid,
     role collaboration_role DEFAULT 'collaborator',
-    joined_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP
+    deleted_at TIMESTAMP
 );
 
 CREATE TABLE invitations (
@@ -16,6 +18,8 @@ CREATE TABLE invitations (
     invitee_id uuid,
     status invitation_status DEFAULT 'pending',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP
+    deleted_at TIMESTAMP
 );
 
 CREATE TABLE comments (
@@ -24,4 +28,6 @@ CREATE TABLE comments (
     user_id uuid,
     content TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP
+    deleted_at TIMESTAMP
 );

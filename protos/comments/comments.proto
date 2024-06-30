@@ -16,7 +16,17 @@ message CreateComment{
 message ID {
   string id = 1;
 }
+
+message CommentInfo {
+  string UserId = 1;
+  string Content = 2;
+  string created_at = 3;
+  string updated_at = 5;
+}
+
 message Comment{
   string username = 2;
   string content = 3;
+  string created_at = 4;
+  string updated_at = 5;
 }
