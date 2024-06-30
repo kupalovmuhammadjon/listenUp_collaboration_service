@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-package postgres
-=======
 package postgres
 
 import (
@@ -27,4 +24,3 @@ func ConnectDB() (*sql.DB, error) {
 
 	return db, nil
 }
->>>>>>> origin/Saidakbar
