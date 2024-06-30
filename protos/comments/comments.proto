@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option go_package = "genproto/comments";
+
+service Comments {
+    rpc CreateCommentByPodcastId(CreateComment) returns (ID);
+    rpc GetCommentsByPodcastId(ID) returns (Comment);
+}
+
+message CreateComment{
+  string podcast_id = 1;
+  string user_id = 2;
+  string content = 3;
+}
+
+message ID {
+  string id = 1;
+}
+message Comment{
+  string username = 2;
+  string content = 3;
+}
