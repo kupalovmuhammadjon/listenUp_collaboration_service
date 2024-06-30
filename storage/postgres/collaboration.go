@@ -118,7 +118,7 @@ func (c *CollaborationRepo) CreateInvitation(invitation *pb.CreateInvite) (strin
 	return id, nil
 }
 
-func (c *CollaborationRepo) UpdateCollaboratorByPodcastId(clb pb.UpdateCollaborator) error {
+func (c *CollaborationRepo) UpdateCollaboratorByPodcastId(clb *pb.UpdateCollaborator) error {
 
 	query := `
 	update 

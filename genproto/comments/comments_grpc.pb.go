@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CommentsClient interface {
 	CreateCommentByPodcastId(ctx context.Context, in *CreateComment, opts ...grpc.CallOption) (*ID, error)
-	GetCommentsByPodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Comment, error)
+	GetCommentsByPodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*AllComments, error)
 }
 
 type commentsClient struct {
@@ -43,8 +43,8 @@ func (c *commentsClient) CreateCommentByPodcastId(ctx context.Context, in *Creat
 	return out, nil
 }
 
-func (c *commentsClient) GetCommentsByPodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Comment, error) {
-	out := new(Comment)
+func (c *commentsClient) GetCommentsByPodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*AllComments, error) {
+	out := new(AllComments)
 	err := c.cc.Invoke(ctx, "/Comments/GetCommentsByPodcastId", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (c *commentsClient) GetCommentsByPodcastId(ctx context.Context, in *ID, opt
 // for forward compatibility
 type CommentsServer interface {
 	CreateCommentByPodcastId(context.Context, *CreateComment) (*ID, error)
-	GetCommentsByPodcastId(context.Context, *ID) (*Comment, error)
+	GetCommentsByPodcastId(context.Context, *ID) (*AllComments, error)
 	mustEmbedUnimplementedCommentsServer()
 }
 
@@ -68,7 +68,7 @@ type UnimplementedCommentsServer struct {
 func (UnimplementedCommentsServer) CreateCommentByPodcastId(context.Context, *CreateComment) (*ID, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCommentByPodcastId not implemented")
 }
-func (UnimplementedCommentsServer) GetCommentsByPodcastId(context.Context, *ID) (*Comment, error) {
+func (UnimplementedCommentsServer) GetCommentsByPodcastId(context.Context, *ID) (*AllComments, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCommentsByPodcastId not implemented")
 }
 func (UnimplementedCommentsServer) mustEmbedUnimplementedCommentsServer() {}
