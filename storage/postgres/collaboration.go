@@ -67,3 +67,28 @@ func (c *CollaborationRepo) DeleteCollaboratorByPodcastId(ids *pb.Ids) (*pb.Void
 
 	return &pb.Void{}, nil
 }
+
+func (c *CollaborationRepo) GetCollaboratorsByPodcastId(PodcastId string) (*[]pb.CollaboratorToGet, error) {
+	query := `select user_id, role, created_at from collaborations
+	where podcast_id = $1`
+
+	collabrators := []pb.CollaboratorToGet{}
+	rows, err := c.Db.Query(query, PodcastId)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var c pb.CollaboratorToGet
+		err := rows.Scan(&c.UserId, &c.Role, &c.JoinedAt)
+		if err != nil {
+			return nil, err
+		}
+		collabrators = append(collabrators, c)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &collabrators, nil
+}
