@@ -19,4 +19,6 @@ message ID {
 message Comment{
   string username = 2;
   string content = 3;
+  string created_at = 4;
+  string updated_at = 5;
 }
