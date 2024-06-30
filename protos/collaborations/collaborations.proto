@@ -5,7 +5,7 @@ option go_package = "genproto/collaborations";
 service Collaborations {
     rpc CreateInvitation(CreateInvite) returns (ID);
     rpc RespondInvitation(CreateCollaboration) returns (ID);
-    rpc GetCollaboratorsByPodcastId(ID) returns (Collaborator);
+    rpc GetCollaboratorsByPodcastId(ID) returns (Collaborators);
     rpc UpdateCollaboratorByPodcastId(UpdateCollaborator) returns (Void);
     rpc DeleteCollaboratorByPodcastId(Ids) returns (Void);
 }
@@ -19,6 +19,7 @@ message CreateInvite{
 message ID {
     string id = 1;
 }
+
 message Ids {
     string PodcastId = 1;
     string UserId = 2;
@@ -34,6 +35,10 @@ message Collaborator{
     string email = 2;
     string role = 3;
     string joined_at = 4;
+}
+
+message Collaborators {
+    repeated Collaborator collaborators = 1;
 }
 
 message Void{
