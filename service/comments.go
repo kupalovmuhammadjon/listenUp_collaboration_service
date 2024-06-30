@@ -15,3 +15,8 @@ func NewComments(db *sql.DB) *Comments {
 	comments := postgres.NewCommentRepo(db)
 	return &Comments{Comments: comments}
 }
+
+func (c *Comments) CreateCommentByPodcastId(comment *pb.CreateComment) (*pb.ID, error) {
+	id, err := c.Comments.CreateCommentByPodcastId(comment)
+	return id, err
+}
