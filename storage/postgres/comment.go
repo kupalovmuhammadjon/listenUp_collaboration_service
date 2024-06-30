@@ -3,6 +3,7 @@ package postgres
 import (
 	pb "collaboration_service/genproto/comments"
 	"database/sql"
+
 	"github.com/google/uuid"
 )
 
@@ -43,7 +44,6 @@ func (c *CommentRepo) GetCommentsByPodcastId(id *pb.ID) (*[]pb.CommentInfo, erro
 	}
 	return &comments, nil
 }
-
 
 func (c *CommentRepo) CreateCommentByPodcastId(comment *pb.CreateComment) (*pb.ID, error) {
 	tx, err := c.Db.Begin()

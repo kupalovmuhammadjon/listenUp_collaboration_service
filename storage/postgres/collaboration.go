@@ -3,6 +3,7 @@ package postgres
 import (
 	pb "collaboration_service/genproto/collaborations"
 	"database/sql"
+
 	"github.com/google/uuid"
 )
 
@@ -24,8 +25,8 @@ func (c *CollaborationRepo) RespondInvitation(collab *pb.CreateCollaboration) (*
 
 	tr, err := c.Db.Begin()
 	if err != nil {
-        return nil, err
-    }
+		return nil, err
+	}
 
 	defer func() {
 		if err != nil {
@@ -50,8 +51,8 @@ func (c *CollaborationRepo) DeleteCollaboratorByPodcastId(ids *pb.Ids) (*pb.Void
 
 	tr, err := c.Db.Begin()
 	if err != nil {
-        return nil, err
-    }
+		return nil, err
+	}
 
 	defer func() {
 		if err != nil {
@@ -63,8 +64,8 @@ func (c *CollaborationRepo) DeleteCollaboratorByPodcastId(ids *pb.Ids) (*pb.Void
 
 	_, err = tr.Exec(query, ids.PodcastId, ids.UserId)
 	if err != nil {
-        return nil, err
-    }
+		return nil, err
+	}
 
 	return &pb.Void{}, nil
 }
