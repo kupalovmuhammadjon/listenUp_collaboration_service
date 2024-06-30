@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type CollaborationsClient interface {
 	CreateInvitation(ctx context.Context, in *CreateInvite, opts ...grpc.CallOption) (*ID, error)
 	RespondInvitation(ctx context.Context, in *CreateCollaboration, opts ...grpc.CallOption) (*ID, error)
-	GetCollaboratorsByPodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Collaborator, error)
+	GetCollaboratorsByPodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Collaborators, error)
 	UpdateCollaboratorByPodcastId(ctx context.Context, in *UpdateCollaborator, opts ...grpc.CallOption) (*Void, error)
 	DeleteCollaboratorByPodcastId(ctx context.Context, in *Ids, opts ...grpc.CallOption) (*Void, error)
 }
@@ -55,8 +55,8 @@ func (c *collaborationsClient) RespondInvitation(ctx context.Context, in *Create
 	return out, nil
 }
 
-func (c *collaborationsClient) GetCollaboratorsByPodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Collaborator, error) {
-	out := new(Collaborator)
+func (c *collaborationsClient) GetCollaboratorsByPodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Collaborators, error) {
+	out := new(Collaborators)
 	err := c.cc.Invoke(ctx, "/Collaborations/GetCollaboratorsByPodcastId", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (c *collaborationsClient) DeleteCollaboratorByPodcastId(ctx context.Context
 type CollaborationsServer interface {
 	CreateInvitation(context.Context, *CreateInvite) (*ID, error)
 	RespondInvitation(context.Context, *CreateCollaboration) (*ID, error)
-	GetCollaboratorsByPodcastId(context.Context, *ID) (*Collaborator, error)
+	GetCollaboratorsByPodcastId(context.Context, *ID) (*Collaborators, error)
 	UpdateCollaboratorByPodcastId(context.Context, *UpdateCollaborator) (*Void, error)
 	DeleteCollaboratorByPodcastId(context.Context, *Ids) (*Void, error)
 	mustEmbedUnimplementedCollaborationsServer()
@@ -104,7 +104,7 @@ func (UnimplementedCollaborationsServer) CreateInvitation(context.Context, *Crea
 func (UnimplementedCollaborationsServer) RespondInvitation(context.Context, *CreateCollaboration) (*ID, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RespondInvitation not implemented")
 }
-func (UnimplementedCollaborationsServer) GetCollaboratorsByPodcastId(context.Context, *ID) (*Collaborator, error) {
+func (UnimplementedCollaborationsServer) GetCollaboratorsByPodcastId(context.Context, *ID) (*Collaborators, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCollaboratorsByPodcastId not implemented")
 }
 func (UnimplementedCollaborationsServer) UpdateCollaboratorByPodcastId(context.Context, *UpdateCollaborator) (*Void, error) {

@@ -3,6 +3,7 @@ package service
 import (
 	pb "collaboration_service/genproto/comments"
 	"collaboration_service/storage/postgres"
+	"context"
 	"database/sql"
 )
 
@@ -16,7 +17,7 @@ func NewComments(db *sql.DB) *Comments {
 	return &Comments{Comments: comments}
 }
 
-func (c *Comments) CreateCommentByPodcastId(comment *pb.CreateComment) (*pb.ID, error) {
+func (c *Comments) CreateCommentByPodcastId(ctx context.Context, comment *pb.CreateComment) (*pb.ID, error) {
 	id, err := c.Comments.CreateCommentByPodcastId(comment)
 	return id, err
 }
