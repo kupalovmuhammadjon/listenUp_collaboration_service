@@ -32,5 +32,5 @@ func (c *CommentRepo) CreateCommentByPodcastId(comment *pb.CreateComment) (*pb.I
 	_, err = tx.Exec(query, newId, comment.PodcastId, comment.UserId,
 		comment.Content)
 
-	return &pb.ID{Id: newId}, nil
+	return &pb.ID{Id: newId}, err
 }
