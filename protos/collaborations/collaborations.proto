@@ -46,7 +46,8 @@ message CollaboratorToGet{
 }
 
 message UpdateCollaborator{
-    string podcast_id = 1;
-    string user_id = 2;
-    string role = 3;
+    string id = 1;
+    string podcast_id = 2;
+    string user_id = 3;
+    string role = 4;
 }
