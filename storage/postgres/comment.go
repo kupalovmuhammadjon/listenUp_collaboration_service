@@ -3,6 +3,7 @@ package postgres
 import (
 	pb "collaboration_service/genproto/comments"
 	"database/sql"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -13,6 +14,28 @@ type CommentRepo struct {
 
 func NewCommentRepo(db *sql.DB) *CommentRepo {
 	return &CommentRepo{Db: db}
+}
+
+func (c *CommentRepo) CreateEpisodeComment(comment *pb.EpisodeComment) (string, error) {
+	tx, err := c.Db.Begin()
+	if err != nil {
+		return "", err
+	}
+	defer tx.Commit()
+
+	query := `
+	insert into 
+	    comments(
+		id, episode_id, user_id, content	
+	) values (
+		$1, $2, $3, $4
+	)`
+
+	newId := uuid.NewString()
+	_, err = tx.Exec(query, newId, comment.EpisodeId, comment.UserId,
+		comment.Content)
+
+	return newId, err
 }
 
 func (c *CommentRepo) GetCommentsByPodcastId(id *pb.ID) (*[]pb.CommentInfo, error) {
@@ -52,7 +75,9 @@ func (c *CommentRepo) CreateCommentByPodcastId(comment *pb.CreateComment) (*pb.I
 	}
 	defer tx.Commit()
 
-	query := `insert into comments(
+	query := `
+	insert into 
+	    comments(
 		id, podcast_id, user_id, content	
 	) values (
 		$1, $2, $3, $4
@@ -63,4 +88,38 @@ func (c *CommentRepo) CreateCommentByPodcastId(comment *pb.CreateComment) (*pb.I
 		comment.Content)
 
 	return &pb.ID{Id: newId}, err
+}
+
+func (c *CommentRepo) CountComments(filter *pb.CountFilter) (*pb.CommentCount, error) {
+	query := `
+	select 
+		count(*)
+	from
+	    comments
+	where
+	    deleted_at IS NULL 
+`
+	paramCount := 0
+	params := []interface{}{}
+	if len(filter.PodcastId) == 32 {
+		query += fmt.Sprintf(" and podcast_id = $%d", paramCount)
+		paramCount++
+		params = append(params, filter.PodcastId)
+	}
+	if len(filter.EpisodeId) == 32 {
+		query += fmt.Sprintf(" and episode_id = $%d", paramCount)
+		paramCount++
+		params = append(params, filter.EpisodeId)
+	}
+
+	row, err := c.Db.Query(query, params...)
+	if err != nil {
+		return nil, err
+	}
+	defer row.Close()
+
+	count := pb.CommentCount{}
+	err = row.Scan(&count.Count)
+
+	return &count, err
 }

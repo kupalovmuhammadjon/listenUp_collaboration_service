@@ -24,6 +24,12 @@ func (c *Comments) CreateCommentByPodcastId(ctx context.Context, comment *pb.Cre
 	return id, err
 }
 
+func (c *Comments) CreateCommentByEpisodeId(ctx context.Context, epComment *pb.EpisodeComment) (*pb.ID, error) {
+	id, err := c.Repo.CreateEpisodeComment(epComment)
+
+	return &pb.ID{Id: id}, err
+}
+
 func (c *Comments) GetCommentsByPodcastId(ctx context.Context, id *pb.ID) (*pb.AllComments, error) {
 	commentInfo, err := c.Repo.GetCommentsByPodcastId(id)
 	if err != nil {
@@ -43,4 +49,10 @@ func (c *Comments) GetCommentsByPodcastId(ctx context.Context, id *pb.ID) (*pb.A
 		allComments.Comments = append(allComments.Comments, &comment)
 	}
 	return &allComments, nil
+}
+
+func (c *Comments) CountComments(ctx context.Context, filter *pb.CountFilter) (*pb.CommentCount, error) {
+	count, err := c.Repo.CountComments(filter)
+
+	return count, err
 }
