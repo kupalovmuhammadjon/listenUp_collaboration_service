@@ -21,6 +21,16 @@ func NewCollaborations(db *sql.DB, client pbU.UserManagementClient) *Collaborati
 		Client: client}
 }
 
+func (c *Collaborations) GetAllPodcastsUsersWorkedOn(ctx context.Context, podcastsId *pb.PodcastsId) (*pb.PodcastsId, error) {
+	colaborators, err := c.Repo.GetCollaboratorsIdByPodcastsId(&podcastsId.PodcastsId)
+	if err != nil {
+		return nil, err
+	}
+
+	podcastsIdToReturn, err := c.Repo.GetPodcastsIdByCollaboratorsId(colaborators)
+	return &pb.PodcastsId{PodcastsId: *podcastsIdToReturn}, err
+}
+
 func (c *Collaborations) GetCollaboratorsByPodcastId(ctx context.Context, id *pb.ID) (*pb.Collaborators, error) {
 	res := pb.Collaborators{}
 

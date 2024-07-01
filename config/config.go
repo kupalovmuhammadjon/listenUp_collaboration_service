@@ -11,7 +11,7 @@ import (
 type Config struct {
 	HTTP_PORT                  int
 	COLLABORATION_SERVICE_PORT string
-	USER_SERVICE_PORT string
+	USER_SERVICE_PORT          string
 	DB_HOST                    string
 	DB_PORT                    string
 	DB_USER                    string
