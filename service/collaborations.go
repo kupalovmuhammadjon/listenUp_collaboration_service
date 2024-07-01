@@ -21,14 +21,21 @@ func NewCollaborations(db *sql.DB, client pbU.UserManagementClient) *Collaborati
 		Client: client}
 }
 
-func (c *Collaborations) GetAllPodcastsUsersWorkedOn(ctx context.Context, podcastsId *pb.PodcastsId) (*pb.PodcastsId, error) {
-	colaborators, err := c.Repo.GetCollaboratorsIdByPodcastsId(&podcastsId.PodcastsId)
+func (c *Collaborations) CreateInvitation(ctx context.Context, invitation *pb.CreateInvite) (*pb.ID, error) {
+	id, err := c.Repo.CreateInvitation(invitation)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.ID{Id: id}, err
+}
+
+func (c *Collaborations) RespondInvitation(ctx context.Context, req *pb.CreateCollaboration) (*pb.ID, error) {
+	resp, err := c.Repo.RespondInvitation(req)
 	if err != nil {
 		return nil, err
 	}
 
-	podcastsIdToReturn, err := c.Repo.GetPodcastsIdByCollaboratorsId(colaborators)
-	return &pb.PodcastsId{PodcastsId: *podcastsIdToReturn}, err
+	return resp, nil
 }
 
 func (c *Collaborations) GetCollaboratorsByPodcastId(ctx context.Context, id *pb.ID) (*pb.Collaborators, error) {
@@ -70,19 +77,12 @@ func (c *Collaborations) DeleteCollaboratorByPodcastId(ctx context.Context, req 
 	return resp, nil
 }
 
-func (c *Collaborations) CreateInvitation(ctx context.Context, invitation *pb.CreateInvite) (*pb.ID, error) {
-	id, err := c.Repo.CreateInvitation(invitation)
-	if err != nil {
-		return nil, err
-	}
-	return &pb.ID{Id: id}, err
-}
-
-func (c *Collaborations) RespondInvitation(ctx context.Context, req *pb.CreateCollaboration) (*pb.ID, error) {
-	resp, err := c.Repo.RespondInvitation(req)
+func (c *Collaborations) GetAllPodcastsUsersWorkedOn(ctx context.Context, podcastsId *pb.PodcastsId) (*pb.PodcastsId, error) {
+	colaborators, err := c.Repo.GetCollaboratorsIdByPodcastsId(&podcastsId.PodcastsId)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp, nil
+	podcastsIdToReturn, err := c.Repo.GetPodcastsIdByCollaboratorsId(colaborators)
+	return &pb.PodcastsId{PodcastsId: *podcastsIdToReturn}, err
 }
