@@ -25,7 +25,8 @@ CREATE TABLE invitations (
 CREATE TABLE comments (
     id uuid PRIMARY KEY gen_random_uuid(),
     podcast_id uuid,
-    user_id uuid,
+    episode_id uuid,
+    user_id uuid not null,
     content TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,

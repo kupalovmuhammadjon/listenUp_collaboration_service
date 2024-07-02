@@ -15,18 +15,18 @@ func NewCollaborationRepo(db *sql.DB) *CollaborationRepo {
 	return &CollaborationRepo{Db: db}
 }
 
-func (c *CollaborationRepo) CreateInvitation(invitation *pb.CreateInvite) (string, error) {
+func (c *CollaborationRepo) CreateCollaboration(collab *pb.CreateCollaboration) (string, error) {
 	query := `
 	insert into 
-	  invitations (id, podcast_id, inviter_id, invitee_id)
-	values ($1, $2, $3, $4)
+	  collaborations (id, podcast_id, user_id)
+	values ($1, $2, $3)
 	`
 	tx, err := c.Db.Begin()
 	if err != nil {
 		return "", err
 	}
 	id := uuid.NewString()
-	_, err = tx.Exec(query, id, invitation.PodcastId, invitation.InviterId, invitation.InviteeId)
+	_, err = tx.Exec(query, id, collab.PodcastId, collab.UserId)
 	if err != nil {
 		tx.Rollback()
 		return "", err
@@ -36,36 +36,6 @@ func (c *CollaborationRepo) CreateInvitation(invitation *pb.CreateInvite) (strin
 		return "", err
 	}
 	return id, nil
-}
-
-func (c *CollaborationRepo) RespondInvitation(collab *pb.CreateCollaboration) (*pb.ID, error) {
-	query := `
-	update invitations
-	set status = $1
-	where podcast_id = $2 and inviter_id = $3 and invitee_id = $4 and deleted_at = null
-	returning id`
-	params := []interface{}{collab.Status, collab.Invitation.PodcastId, collab.Invitation.InviterId, collab.Invitation.InviteeId}
-
-	tr, err := c.Db.Begin()
-	if err != nil {
-		return nil, err
-	}
-
-	defer func() {
-		if err != nil {
-			tr.Rollback()
-		} else {
-			tr.Commit()
-		}
-	}()
-
-	var invitationID pb.ID
-	err = tr.QueryRow(query, params...).Scan(&invitationID.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	return &invitationID, nil
 }
 
 func (c *CollaborationRepo) GetCollaboratorsByPodcastId(PodcastId string) ([]*pb.CollaboratorToGet, error) {
@@ -145,6 +115,67 @@ func (c *CollaborationRepo) DeleteCollaboratorByPodcastId(ids *pb.Ids) (*pb.Void
 	}
 
 	return &pb.Void{}, nil
+}
+
+func (c *CollaborationRepo) CreateInvitation(invitation *pb.CreateInvite) (string, error) {
+	query := `
+	insert into 
+	  invitations (id, podcast_id, inviter_id, invitee_id)
+	values ($1, $2, $3, $4)
+	`
+	tx, err := c.Db.Begin()
+	if err != nil {
+		return "", err
+	}
+	id := uuid.NewString()
+	_, err = tx.Exec(query, id, invitation.PodcastId, invitation.InviterId, invitation.InviteeId)
+	if err != nil {
+		tx.Rollback()
+		return "", err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
+func (c *CollaborationRepo) RespondInvitation(collab *pb.CreateCollaboration) (*pb.ID, error) {
+	query := `
+	update 
+		invitations
+	set 
+		status = $1
+	where 
+		id = $2 and deleted_at = null`
+	params := []interface{}{collab.Status, collab.InvitationId}
+
+	tr, err := c.Db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err != nil {
+			tr.Rollback()
+		} else {
+			tr.Commit()
+		}
+	}()
+
+	_, err = tr.Exec(query, params...)
+	if err != nil {
+		return nil, err
+	}
+	if collab.Status == "accepted" {
+		id, err := c.CreateCollaboration(collab)
+		if err != nil {
+			return nil, err
+		}
+		return &pb.ID{Id: id}, nil
+	}
+
+	return &pb.ID{}, nil
 }
 
 func (c *CollaborationRepo) GetCollaboratorsIdByPodcastsId(podcastsId *[]string) (*[]string, error) {
