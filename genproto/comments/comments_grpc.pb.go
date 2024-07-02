@@ -24,6 +24,9 @@ const _ = grpc.SupportPackageIsVersion7
 type CommentsClient interface {
 	CreateCommentByPodcastId(ctx context.Context, in *CreateComment, opts ...grpc.CallOption) (*ID, error)
 	GetCommentsByPodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*AllComments, error)
+	CreateCommentByEpisodeId(ctx context.Context, in *EpisodeComment, opts ...grpc.CallOption) (*ID, error)
+	GetCommentsByEpisodeId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*AllComments, error)
+	CountComments(ctx context.Context, in *CountFilter, opts ...grpc.CallOption) (*CommentCount, error)
 }
 
 type commentsClient struct {
@@ -52,12 +55,42 @@ func (c *commentsClient) GetCommentsByPodcastId(ctx context.Context, in *ID, opt
 	return out, nil
 }
 
+func (c *commentsClient) CreateCommentByEpisodeId(ctx context.Context, in *EpisodeComment, opts ...grpc.CallOption) (*ID, error) {
+	out := new(ID)
+	err := c.cc.Invoke(ctx, "/Comments/CreateCommentByEpisodeId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commentsClient) GetCommentsByEpisodeId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*AllComments, error) {
+	out := new(AllComments)
+	err := c.cc.Invoke(ctx, "/Comments/GetCommentsByEpisodeId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commentsClient) CountComments(ctx context.Context, in *CountFilter, opts ...grpc.CallOption) (*CommentCount, error) {
+	out := new(CommentCount)
+	err := c.cc.Invoke(ctx, "/Comments/CountComments", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommentsServer is the server API for Comments service.
 // All implementations must embed UnimplementedCommentsServer
 // for forward compatibility
 type CommentsServer interface {
 	CreateCommentByPodcastId(context.Context, *CreateComment) (*ID, error)
 	GetCommentsByPodcastId(context.Context, *ID) (*AllComments, error)
+	CreateCommentByEpisodeId(context.Context, *EpisodeComment) (*ID, error)
+	GetCommentsByEpisodeId(context.Context, *ID) (*AllComments, error)
+	CountComments(context.Context, *CountFilter) (*CommentCount, error)
 	mustEmbedUnimplementedCommentsServer()
 }
 
@@ -70,6 +103,15 @@ func (UnimplementedCommentsServer) CreateCommentByPodcastId(context.Context, *Cr
 }
 func (UnimplementedCommentsServer) GetCommentsByPodcastId(context.Context, *ID) (*AllComments, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCommentsByPodcastId not implemented")
+}
+func (UnimplementedCommentsServer) CreateCommentByEpisodeId(context.Context, *EpisodeComment) (*ID, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCommentByEpisodeId not implemented")
+}
+func (UnimplementedCommentsServer) GetCommentsByEpisodeId(context.Context, *ID) (*AllComments, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCommentsByEpisodeId not implemented")
+}
+func (UnimplementedCommentsServer) CountComments(context.Context, *CountFilter) (*CommentCount, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountComments not implemented")
 }
 func (UnimplementedCommentsServer) mustEmbedUnimplementedCommentsServer() {}
 
@@ -120,6 +162,60 @@ func _Comments_GetCommentsByPodcastId_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Comments_CreateCommentByEpisodeId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EpisodeComment)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommentsServer).CreateCommentByEpisodeId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Comments/CreateCommentByEpisodeId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommentsServer).CreateCommentByEpisodeId(ctx, req.(*EpisodeComment))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Comments_GetCommentsByEpisodeId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommentsServer).GetCommentsByEpisodeId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Comments/GetCommentsByEpisodeId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommentsServer).GetCommentsByEpisodeId(ctx, req.(*ID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Comments_CountComments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountFilter)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommentsServer).CountComments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Comments/CountComments",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommentsServer).CountComments(ctx, req.(*CountFilter))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Comments_ServiceDesc is the grpc.ServiceDesc for Comments service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +230,18 @@ var Comments_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCommentsByPodcastId",
 			Handler:    _Comments_GetCommentsByPodcastId_Handler,
+		},
+		{
+			MethodName: "CreateCommentByEpisodeId",
+			Handler:    _Comments_CreateCommentByEpisodeId_Handler,
+		},
+		{
+			MethodName: "GetCommentsByEpisodeId",
+			Handler:    _Comments_GetCommentsByEpisodeId_Handler,
+		},
+		{
+			MethodName: "CountComments",
+			Handler:    _Comments_CountComments_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
