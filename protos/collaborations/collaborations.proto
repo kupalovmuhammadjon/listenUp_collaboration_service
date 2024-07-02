@@ -27,7 +27,9 @@ message Ids {
 
 message CreateCollaboration{
     string status = 1;
-    CreateInvite invitation = 2;
+    string invitation_id = 2;
+    string podcast_id = 3;
+    string user_id = 4;
 }
 
 message Collaborator{

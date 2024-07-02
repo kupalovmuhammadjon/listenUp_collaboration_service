@@ -15,6 +15,30 @@ func NewCollaborationRepo(db *sql.DB) *CollaborationRepo {
 	return &CollaborationRepo{Db: db}
 }
 
+
+func (c *CollaborationRepo) CreateCollaboration(collab *pb.CreateCollaboration) (string, error) {
+	query := `
+	insert into 
+	  collaborations (id, podcast_id, user_id)
+	values ($1, $2, $3)
+	`
+	tx, err := c.Db.Begin()
+	if err != nil {
+		return "", err
+	}
+	id := uuid.NewString()
+	_, err = tx.Exec(query, id, collab.PodcastId, collab.UserId)
+	if err != nil {
+		tx.Rollback()
+		return "", err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
 func (c *CollaborationRepo) GetCollaboratorsByPodcastId(PodcastId string) (*[]pb.CollaboratorToGet, error) {
 	query := `select user_id, role, created_at from collaborations
 	where podcast_id = $1`
@@ -119,11 +143,13 @@ func (c *CollaborationRepo) CreateInvitation(invitation *pb.CreateInvite) (strin
 
 func (c *CollaborationRepo) RespondInvitation(collab *pb.CreateCollaboration) (*pb.ID, error) {
 	query := `
-	update invitations
-	set status = $1
-	where podcast_id = $2 and inviter_id = $3 and invitee_id = $4 and deleted_at = null
-	returning id`
-	params := []interface{}{collab.Status, collab.Invitation.PodcastId, collab.Invitation.InviterId, collab.Invitation.InviteeId}
+	update 
+		invitations
+	set 
+		status = $1
+	where 
+		id = $2 and deleted_at = null`
+	params := []interface{}{collab.Status, collab.InvitationId}
 
 	tr, err := c.Db.Begin()
 	if err != nil {
@@ -138,11 +164,17 @@ func (c *CollaborationRepo) RespondInvitation(collab *pb.CreateCollaboration) (*
 		}
 	}()
 
-	var invitationID pb.ID
-	err = tr.QueryRow(query, params...).Scan(&invitationID.Id)
+	_, err = tr.Exec(query, params...)
 	if err != nil {
 		return nil, err
 	}
+	if collab.Status == "accepted"{
+		id, err := c.CreateCollaboration(collab)
+		if err != nil {
+			return nil, err
+		}
+		return &pb.ID{Id: id}, nil
+	}
 
-	return &invitationID, nil
+	return &pb.ID{}, nil
 }
