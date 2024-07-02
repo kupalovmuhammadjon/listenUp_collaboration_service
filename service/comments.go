@@ -3,20 +3,27 @@ package service
 import (
 	pb "collaboration_service/genproto/comments"
 	pbu "collaboration_service/genproto/user"
+	"collaboration_service/pkg"
 	"collaboration_service/storage/postgres"
 	"context"
 	"database/sql"
+	"log"
 )
 
 type Comments struct {
 	pb.UnimplementedCommentsServer
 	Repo       *postgres.CommentRepo
-	UserClient *pbu.UserManagementClient
+	UserClient pbu.UserManagementClient
 }
 
-func NewComments(db *sql.DB, userClient *pbu.UserManagementClient) *Comments {
+func NewComments(db *sql.DB) *Comments {
+	client, err := pkg.CreateUserManagementClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	comments := postgres.NewCommentRepo(db)
-	return &Comments{Repo: comments, UserClient: userClient}
+	return &Comments{Repo: comments, UserClient: client}
 }
 
 func (c *Comments) CreateCommentByPodcastId(ctx context.Context, comment *pb.CreateComment) (*pb.ID, error) {
@@ -30,16 +37,16 @@ func (c *Comments) GetCommentsByPodcastId(ctx context.Context, id *pb.ID) (*pb.A
 		return nil, err
 	}
 	allComments := pb.AllComments{}
-	for i := 0; i < len(*commentInfo); i++ {
+	for i := 0; i < len(commentInfo); i++ {
 		comment := pb.Comment{}
-		user, err := (*c.UserClient).GetUserByID(context.Background(), &pbu.ID{Id: (*commentInfo)[i].UserId})
+		user, err := c.UserClient.GetUserByID(context.Background(), &pbu.ID{Id: (commentInfo)[i].UserId})
 		if err != nil {
 			return nil, err
 		}
 		comment.Username = user.Username
-		comment.Content = (*commentInfo)[i].Content
-		comment.CreatedAt = (*commentInfo)[i].CreatedAt
-		comment.UpdatedAt = (*commentInfo)[i].UpdatedAt
+		comment.Content = (commentInfo)[i].Content
+		comment.CreatedAt = (commentInfo)[i].CreatedAt
+		comment.UpdatedAt = (commentInfo)[i].UpdatedAt
 		allComments.Comments = append(allComments.Comments, &comment)
 	}
 	return &allComments, nil

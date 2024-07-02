@@ -1,4 +1,4 @@
-package client
+package pkg
 
 import (
 	"collaboration_service/config"
@@ -9,11 +9,11 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func NewUserManagementClient() (user.UserManagementClient, error) {
+func CreateUserManagementClient() (user.UserManagementClient, error) {
 	cfg := config.Load()
 	conn, err := grpc.NewClient(cfg.USER_SERVICE_PORT, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		return nil, errors.New("failed to connect to the address: "+err.Error())
+		return nil, errors.New("failed to connect to the address: " + err.Error())
 	}
 	defer conn.Close()
 

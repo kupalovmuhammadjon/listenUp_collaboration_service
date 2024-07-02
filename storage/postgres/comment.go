@@ -35,7 +35,7 @@ func (c *CommentRepo) CreateCommentByPodcastId(comment *pb.CreateComment) (*pb.I
 	return &pb.ID{Id: newId}, err
 }
 
-func (c *CommentRepo) GetCommentsByPodcastId(id *pb.ID) (*[]pb.CommentInfo, error) {
+func (c *CommentRepo) GetCommentsByPodcastId(id *pb.ID) ([]*pb.CommentInfo, error) {
 	query := `
 	select
 		user_id,
@@ -47,7 +47,7 @@ func (c *CommentRepo) GetCommentsByPodcastId(id *pb.ID) (*[]pb.CommentInfo, erro
 	where
 	    podcast_id = $1`
 
-	comments := []pb.CommentInfo{}
+	comments := []*pb.CommentInfo{}
 	rows, err := c.Db.Query(query, id.Id)
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (c *CommentRepo) GetCommentsByPodcastId(id *pb.ID) (*[]pb.CommentInfo, erro
 		if err != nil {
 			return nil, err
 		}
-		comments = append(comments, comment)
+		comments = append(comments, &comment)
 	}
-	return &comments, nil
+	return comments, nil
 }

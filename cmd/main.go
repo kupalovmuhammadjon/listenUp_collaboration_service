@@ -1,7 +1,6 @@
 package main
 
 import (
-	"collaboration_service/client"
 	"collaboration_service/config"
 	pbCollab "collaboration_service/genproto/collaborations"
 	pbCom "collaboration_service/genproto/comments"
@@ -28,13 +27,8 @@ func main() {
 
 	server := grpc.NewServer()
 
-	userClient, err := client.NewUserManagementClient()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	pbCollab.RegisterCollaborationsServer(server, service.NewCollaborations(db, userClient))
-	pbCom.RegisterCommentsServer(server, service.NewComments(db, &userClient))
+	pbCollab.RegisterCollaborationsServer(server, service.NewCollaborations(db))
+	pbCom.RegisterCommentsServer(server, service.NewComments(db))
 
 	fmt.Printf("server is listening on port %s", config.Load().COLLABORATION_SERVICE_PORT)
 	if err := server.Serve(lis); err != nil {

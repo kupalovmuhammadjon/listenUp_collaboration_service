@@ -68,11 +68,11 @@ func (c *CollaborationRepo) RespondInvitation(collab *pb.CreateCollaboration) (*
 	return &invitationID, nil
 }
 
-func (c *CollaborationRepo) GetCollaboratorsByPodcastId(PodcastId string) (*[]pb.CollaboratorToGet, error) {
+func (c *CollaborationRepo) GetCollaboratorsByPodcastId(PodcastId string) ([]*pb.CollaboratorToGet, error) {
 	query := `select user_id, role, created_at from collaborations
 	where podcast_id = $1`
 
-	collabrators := []pb.CollaboratorToGet{}
+	collabrators := []*pb.CollaboratorToGet{}
 	rows, err := c.Db.Query(query, PodcastId)
 	if err != nil {
 		return nil, err
@@ -84,13 +84,13 @@ func (c *CollaborationRepo) GetCollaboratorsByPodcastId(PodcastId string) (*[]pb
 		if err != nil {
 			return nil, err
 		}
-		collabrators = append(collabrators, c)
+		collabrators = append(collabrators, &c)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return &collabrators, nil
+	return collabrators, nil
 }
 
 func (c *CollaborationRepo) UpdateCollaboratorByPodcastId(clb *pb.UpdateCollaborator) error {

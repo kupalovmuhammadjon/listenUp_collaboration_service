@@ -2,23 +2,28 @@ package service
 
 import (
 	pb "collaboration_service/genproto/collaborations"
-	pbU "collaboration_service/genproto/user"
+	pbu "collaboration_service/genproto/user"
+	"collaboration_service/pkg"
 	"collaboration_service/storage/postgres"
 	"context"
 	"database/sql"
+	"log"
 )
 
 type Collaborations struct {
 	pb.UnimplementedCollaborationsServer
-	Repo   *postgres.CollaborationRepo
-	Client pbU.UserManagementClient
+	Repo       *postgres.CollaborationRepo
+	UserClient pbu.UserManagementClient
 }
 
-func NewCollaborations(db *sql.DB, client pbU.UserManagementClient) *Collaborations {
+func NewCollaborations(db *sql.DB) *Collaborations {
+	client, err := pkg.CreateUserManagementClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	collaborations := postgres.NewCollaborationRepo(db)
-	return &Collaborations{
-		Repo:   collaborations,
-		Client: client}
+	return &Collaborations{Repo: collaborations, UserClient: client}
 }
 
 func (c *Collaborations) CreateInvitation(ctx context.Context, invitation *pb.CreateInvite) (*pb.ID, error) {
@@ -46,8 +51,8 @@ func (c *Collaborations) GetCollaboratorsByPodcastId(ctx context.Context, id *pb
 		return nil, err
 	}
 
-	for _, col := range *collaboratorsId {
-		userInfo, err := c.Client.GetUserByID(context.Background(), &pbU.ID{Id: col.UserId})
+	for _, col := range collaboratorsId {
+		userInfo, err := c.UserClient.GetUserByID(context.Background(), &pbu.ID{Id: col.UserId})
 		if err != nil {
 			return nil, err
 		}
