@@ -18,7 +18,7 @@ func NewCollaborationRepo(db *sql.DB) *CollaborationRepo {
 func (c *CollaborationRepo) CreateCollaboration(collab *pb.CreateCollaboration) (string, error) {
 	query := `
 	insert into 
-	  collaborations (id, podcast_id, user_id)
+	  	collaborations (id, podcast_id, user_id)
 	values ($1, $2, $3)
 	`
 	tx, err := c.Db.Begin()
@@ -39,8 +39,13 @@ func (c *CollaborationRepo) CreateCollaboration(collab *pb.CreateCollaboration) 
 }
 
 func (c *CollaborationRepo) GetCollaboratorsByPodcastId(PodcastId string) ([]*pb.CollaboratorToGet, error) {
-	query := `select user_id, role, created_at from collaborations
-	where podcast_id = $1`
+	query := `
+	select 
+		user_id, role, created_at 
+	from 
+		collaborations
+	where 
+		podcast_id = $1 and deleted_at is null`
 
 	collabrators := []*pb.CollaboratorToGet{}
 	rows, err := c.Db.Query(query, PodcastId)
@@ -67,14 +72,13 @@ func (c *CollaborationRepo) UpdateCollaboratorByPodcastId(clb *pb.UpdateCollabor
 
 	query := `
 	update 
-		set
-		   podcast_id = $1,
-		  user_id = $2, 
-		  role = $3
-	from
 		collaborations
+	set
+		podcast_id = $1,
+		user_id = $2, 
+		role = $3
 	where
-		id = $4
+		id = $4 and deleted_at is null
   `
 	tx, err := c.Db.Begin()
 	if err != nil {
@@ -93,8 +97,13 @@ func (c *CollaborationRepo) UpdateCollaboratorByPodcastId(clb *pb.UpdateCollabor
 }
 
 func (c *CollaborationRepo) DeleteCollaboratorByPodcastId(ids *pb.Ids) (*pb.Void, error) {
-	query := `delete from collaborations
-	where podcast_id = $1 and user_id = $2`
+	query := `
+	update 
+		collaborations
+	set
+		deleted_at = now()
+	where 
+		and deleted_at is null`
 
 	tr, err := c.Db.Begin()
 	if err != nil {
@@ -147,7 +156,7 @@ func (c *CollaborationRepo) RespondInvitation(collab *pb.CreateCollaboration) (*
 	set 
 		status = $1
 	where 
-		id = $2 and deleted_at = null`
+		id = $2 and deleted_at is null`
 	params := []interface{}{collab.Status, collab.InvitationId}
 
 	tr, err := c.Db.Begin()
@@ -187,7 +196,7 @@ func (c *CollaborationRepo) GetCollaboratorsIdByPodcastsId(podcastsId *[]string)
 		from 
 			collaborations
 		where
-			podcast_id = $1	
+			podcast_id = $1	and deleted_at is null
 		`
 
 	for _, podcastId := range *podcastsId {
@@ -224,12 +233,12 @@ func (c *CollaborationRepo) GetPodcastsIdByCollaboratorsId(colaboratorsId *[]str
 	podcastsId := map[string]bool{}
 
 	query := `
-		select
-			distinct podcast_id
+		select distinct 
+			podcast_id
 		from
 			collaborations
 		where
-			user_id = $1
+			user_id = $1 and deleted_at is null
 		`
 
 	for _, colaboratorId := range *colaboratorsId {
