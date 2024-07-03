@@ -23,17 +23,3 @@ VALUES
     ('557e8400-e29b-41d4-a716-446655440007', NULL, NULL, NULL, 'pending', '2024-06-23 13:15:00'),
     ('558e8400-e29b-41d4-a716-446655440008', NULL, NULL, NULL, 'accepted', '2024-06-22 09:45:00'),
     ('559e8400-e29b-41d4-a716-446655440009', NULL, NULL, NULL, 'pending', '2024-06-21 11:00:00');
-
-
-INSERT INTO comments (id, podcast_id, user_id, content)
-VALUES
-    ('7f7d8a4d-5cf7-4e2a-af67-8e6a6e976834', NULL, NULL, 'Great episode, loved the discussion!'),
-    ('2b6c30bb-5a3e-48cd-81a6-c6e9b8574a10', NULL, NULL, 'Interesting points raised.'),
-    ('d1f9f31e-9441-4a97-a6fb-9beecfde5a21', NULL, NULL, 'Looking forward to the next episode.'),
-    ('f75e1b3d-7e12-4e1d-9c7a-bc81d82fa2e3', NULL, NULL, 'Could you please elaborate on that?'),
-    ('1e70c82f-cbf3-4e30-9ea8-1c1011d509c6', NULL, NULL, 'I have a question about the topic.'),
-    ('4a952aeb-2c19-4312-a190-4d403a9f7c77', NULL, NULL, 'This podcast always makes my day better.'),
-    ('6c4134b7-bd1f-4c74-8e1c-bb44eb79f4d1', NULL, NULL, 'Wonderful content, keep it up!'),
-    ('a9e7b1c5-9e8e-48d3-9f32-03ff0d4232f8', NULL, NULL, 'I wish more podcasts were like this.'),
-    ('3b85a9f2-d16f-4a6a-a632-982c226d3f9b', NULL, NULL, 'This episode was a bit confusing.'),
-    ('e2f5638d-5c26-429a-94eb-7b2223e8de06', NULL, NULL, 'I appreciate the effort put into this episode.');

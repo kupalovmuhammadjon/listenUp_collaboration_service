@@ -2,7 +2,7 @@ CREATE TYPE collaboration_role AS ENUM ('owner', 'collaborator');
 CREATE TYPE invitation_status AS ENUM ('pending', 'accepted', 'declined');
 
 CREATE TABLE collaborations (
-    id uuid PRIMARY KEY gen_random_uuid(),
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     podcast_id uuid,
     user_id uuid,
     role collaboration_role DEFAULT 'collaborator',
@@ -12,7 +12,7 @@ CREATE TABLE collaborations (
 );
 
 CREATE TABLE invitations (
-    id uuid PRIMARY KEY gen_random_uuid(),
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     podcast_id uuid,
     inviter_id uuid,
     invitee_id uuid,
@@ -23,7 +23,7 @@ CREATE TABLE invitations (
 );
 
 CREATE TABLE comments (
-    id uuid PRIMARY KEY gen_random_uuid(),
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     podcast_id uuid,
     episode_id uuid,
     user_id uuid not null,
