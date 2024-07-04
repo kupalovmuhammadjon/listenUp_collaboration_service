@@ -58,6 +58,27 @@ func (c *Comments) GetCommentsByPodcastId(ctx context.Context, id *pb.ID) (*pb.A
 	return &allComments, nil
 }
 
+func (c *Comments) GetCommentsByEpisodeId(ctx context.Context, id *pb.ID) (*pb.AllComments, error) {
+	commentInfo, err := c.Repo.GetCommentsByEpisodeId(id)
+	if err != nil {
+		return nil, err
+	}
+	allComments := pb.AllComments{}
+	for i := 0; i < len(commentInfo); i++ {
+		comment := pb.Comment{}
+		user, err := c.UserClient.GetUserByID(context.Background(), &pbu.ID{Id: (commentInfo)[i].UserId})
+		if err != nil {
+			return nil, err
+		}
+		comment.Username = user.Username
+		comment.Content = (commentInfo)[i].Content
+		comment.CreatedAt = (commentInfo)[i].CreatedAt
+		comment.UpdatedAt = (commentInfo)[i].UpdatedAt
+		allComments.Comments = append(allComments.Comments, &comment)
+	}
+	return &allComments, nil
+}
+
 func (c *Comments) CountComments(ctx context.Context, filter *pb.CountFilter) (*pb.CommentCount, error) {
 	count, err := c.Repo.CountComments(filter)
 
