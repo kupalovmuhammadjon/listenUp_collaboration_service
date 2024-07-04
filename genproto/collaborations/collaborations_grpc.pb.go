@@ -39,7 +39,7 @@ func NewCollaborationsClient(cc grpc.ClientConnInterface) CollaborationsClient {
 
 func (c *collaborationsClient) CreateInvitation(ctx context.Context, in *CreateInvite, opts ...grpc.CallOption) (*ID, error) {
 	out := new(ID)
-	err := c.cc.Invoke(ctx, "/Collaborations/CreateInvitation", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/collaborations.Collaborations/CreateInvitation", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *collaborationsClient) CreateInvitation(ctx context.Context, in *CreateI
 
 func (c *collaborationsClient) RespondInvitation(ctx context.Context, in *CreateCollaboration, opts ...grpc.CallOption) (*ID, error) {
 	out := new(ID)
-	err := c.cc.Invoke(ctx, "/Collaborations/RespondInvitation", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/collaborations.Collaborations/RespondInvitation", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *collaborationsClient) RespondInvitation(ctx context.Context, in *Create
 
 func (c *collaborationsClient) GetCollaboratorsByPodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Collaborators, error) {
 	out := new(Collaborators)
-	err := c.cc.Invoke(ctx, "/Collaborations/GetCollaboratorsByPodcastId", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/collaborations.Collaborations/GetCollaboratorsByPodcastId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (c *collaborationsClient) GetCollaboratorsByPodcastId(ctx context.Context, 
 
 func (c *collaborationsClient) UpdateCollaboratorByPodcastId(ctx context.Context, in *UpdateCollaborator, opts ...grpc.CallOption) (*Void, error) {
 	out := new(Void)
-	err := c.cc.Invoke(ctx, "/Collaborations/UpdateCollaboratorByPodcastId", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/collaborations.Collaborations/UpdateCollaboratorByPodcastId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *collaborationsClient) UpdateCollaboratorByPodcastId(ctx context.Context
 
 func (c *collaborationsClient) DeleteCollaboratorByPodcastId(ctx context.Context, in *Ids, opts ...grpc.CallOption) (*Void, error) {
 	out := new(Void)
-	err := c.cc.Invoke(ctx, "/Collaborations/DeleteCollaboratorByPodcastId", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/collaborations.Collaborations/DeleteCollaboratorByPodcastId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func _Collaborations_CreateInvitation_Handler(srv interface{}, ctx context.Conte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Collaborations/CreateInvitation",
+		FullMethod: "/collaborations.Collaborations/CreateInvitation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CollaborationsServer).CreateInvitation(ctx, req.(*CreateInvite))
@@ -154,7 +154,7 @@ func _Collaborations_RespondInvitation_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Collaborations/RespondInvitation",
+		FullMethod: "/collaborations.Collaborations/RespondInvitation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CollaborationsServer).RespondInvitation(ctx, req.(*CreateCollaboration))
@@ -172,7 +172,7 @@ func _Collaborations_GetCollaboratorsByPodcastId_Handler(srv interface{}, ctx co
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Collaborations/GetCollaboratorsByPodcastId",
+		FullMethod: "/collaborations.Collaborations/GetCollaboratorsByPodcastId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CollaborationsServer).GetCollaboratorsByPodcastId(ctx, req.(*ID))
@@ -190,7 +190,7 @@ func _Collaborations_UpdateCollaboratorByPodcastId_Handler(srv interface{}, ctx 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Collaborations/UpdateCollaboratorByPodcastId",
+		FullMethod: "/collaborations.Collaborations/UpdateCollaboratorByPodcastId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CollaborationsServer).UpdateCollaboratorByPodcastId(ctx, req.(*UpdateCollaborator))
@@ -208,7 +208,7 @@ func _Collaborations_DeleteCollaboratorByPodcastId_Handler(srv interface{}, ctx 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Collaborations/DeleteCollaboratorByPodcastId",
+		FullMethod: "/collaborations.Collaborations/DeleteCollaboratorByPodcastId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CollaborationsServer).DeleteCollaboratorByPodcastId(ctx, req.(*Ids))
@@ -220,7 +220,7 @@ func _Collaborations_DeleteCollaboratorByPodcastId_Handler(srv interface{}, ctx 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Collaborations_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "Collaborations",
+	ServiceName: "collaborations.Collaborations",
 	HandlerType: (*CollaborationsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
