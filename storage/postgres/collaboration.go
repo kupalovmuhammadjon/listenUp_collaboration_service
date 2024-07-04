@@ -191,8 +191,8 @@ func (c *CollaborationRepo) GetCollaboratorsIdByPodcastsId(podcastsId *[]string)
 	collaboratorsId := map[string]bool{}
 
 	query := `
-		select
-			distinct user_id
+		select distinct 
+			user_id
 		from 
 			collaborations
 		where
@@ -200,7 +200,6 @@ func (c *CollaborationRepo) GetCollaboratorsIdByPodcastsId(podcastsId *[]string)
 		`
 
 	for _, podcastId := range *podcastsId {
-		collaboratorsIdOfAPodcasts := []string{}
 
 		rows, err := c.Db.Query(query, podcastId)
 		if err != nil {
@@ -213,17 +212,15 @@ func (c *CollaborationRepo) GetCollaboratorsIdByPodcastsId(podcastsId *[]string)
 			if err != nil {
 				return nil, err
 			}
-			collaboratorsIdOfAPodcasts = append(collaboratorsIdOfAPodcasts, collaboratorIdOfAPodcasts)
-		}
-
-		for _, val := range collaboratorsIdOfAPodcasts {
-			collaboratorsId[val] = true
+			collaboratorsId[collaboratorIdOfAPodcasts] = true
 		}
 	}
-	res := make([]string, len(collaboratorsId))
 
+	res := make([]string, len(collaboratorsId))
+	i := 0
 	for val := range collaboratorsId {
-		res = append(res, val)
+		res[i] = val
+		i++
 	}
 
 	return &res, nil

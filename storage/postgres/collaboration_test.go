@@ -63,7 +63,6 @@ func TestGetCollaboratorsByPodcastId(t *testing.T){
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(collaborators)
 
 	if len(collaborators) == 0{
 		panic(fmt.Errorf("nothing in slice"))
@@ -99,4 +98,66 @@ func TestDeleteCollaboratorByPodcastId(t *testing.T){
 	if err != nil {
 		panic(err)
 	}
+}
+
+
+func TestRespondInvitation(t *testing.T){
+	c := newCollaborationRepoTest()
+
+	req := pb.CreateCollaboration{
+		Status: "accepted",
+		InvitationId: "a629f1ef-a4a8-4ab1-bfbb-9f84a72d2748",
+		PodcastId: "604821bc-c777-4a7e-8f77-4dc783c5a856",
+		UserId: "21aa9066-6634-4c3e-ad6e-66e9b00dca70",
+	}
+	id, err := c.RespondInvitation(&req)
+	if err != nil {
+		panic(err)
+	}
+	_, err = uuid.Parse(id.Id)
+	if err != nil {
+		panic(fmt.Errorf("invalid id returned"))
+	}
+	
+	req = pb.CreateCollaboration{
+		Status: "declined",
+		InvitationId: "abd93ecf-b6bf-4980-b46c-477d87a15748",
+		PodcastId: "604821bc-c777-4a7e-8f77-4dc783c5a856",
+		UserId: "21aa9066-6634-4c3e-ad6e-66e9b00dca70",
+	}
+	id, err = c.RespondInvitation(&req)
+	if err != nil {
+		panic(err)
+	}
+	_, err = uuid.Parse(id.Id)
+	if err == nil {
+		panic(fmt.Errorf("valid id returned expected nothing"))
+	}
+}
+
+func TestGetPodcastsIdByCollaboratorsId(t *testing.T){
+	c := newCollaborationRepoTest()
+	collabIds := []string{"21aa9066-6634-4c3e-ad6e-66e9b00dca70"}
+	ids, err := c.GetPodcastsIdByCollaboratorsId(&collabIds)
+	if err != nil {
+		panic(err)
+	}
+	if len(*ids) == 0{
+		panic(fmt.Errorf("Nothing in the array"))
+	}
+}
+
+func TestGetCollaboratorsIdByPodcastsId(t *testing.T){
+	c := newCollaborationRepoTest()
+
+	pIds := []string{"604821bc-c777-4a7e-8f77-4dc783c5a856"}
+	uIds, err := c.GetCollaboratorsIdByPodcastsId(&pIds)
+	if err != nil {
+		panic(err)
+	}
+
+	if len(*uIds) != 1{
+		panic(fmt.Errorf("expected 1 bu got many"))
+	}
+
 }
