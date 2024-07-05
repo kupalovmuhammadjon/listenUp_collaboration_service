@@ -37,6 +37,12 @@ func (c *Comments) CreateCommentByEpisodeId(ctx context.Context, epComment *pb.E
 	return &pb.ID{Id: id}, err
 }
 
+func (c *Comments) ValidateCommentId(ctx context.Context, id *pb.ID) (*pb.Exists, error) {
+	exists, err := c.Repo.ValidateCommentId(id.Id)
+
+	return exists, err
+}
+
 func (c *Comments) GetCommentsByPodcastId(ctx context.Context, filter *pb.CommentFilter) (*pb.AllComments, error) {
 	commentInfo, err := c.Repo.GetCommentsByPodcastId(filter)
 	if err != nil {

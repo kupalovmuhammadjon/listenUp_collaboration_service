@@ -67,6 +67,18 @@ func (c *Collaborations) GetCollaboratorsByPodcastId(ctx context.Context, id *pb
 	return &res, nil
 }
 
+func (c *Collaborations) ValidateCollaborationId(ctx context.Context, id *pb.ID) (*pb.Exists, error) {
+	exists, err := c.Repo.ValidateCollaborationId(id.Id)
+
+	return exists, err
+}
+
+func (c *Collaborations) ValidateInvitationId(ctx context.Context, id *pb.ID) (*pb.Exists, error) {
+	exists, err := c.Repo.ValidateInvitationId(id.Id)
+
+	return exists, err
+}
+
 func (c *Collaborations) UpdateCollaboratorByPodcastId(ctx context.Context, clb *pb.UpdateCollaborator) (*pb.Void, error) {
 	err := c.Repo.UpdateCollaboratorByPodcastId(clb)
 

@@ -149,6 +149,42 @@ func (c *CollaborationRepo) CreateInvitation(invitation *pb.CreateInvite) (strin
 	return id, nil
 }
 
+func (c *CollaborationRepo) ValidateCollaborationId(collaborationsId string) (*pb.Exists, error) {
+
+	query := `
+	select
+      	case 
+        	when id = $1 then true
+      	else
+        	false
+      	end
+    from
+      	collaborations
+	`
+	exists := pb.Exists{}
+	err := c.Db.QueryRow(query, collaborationsId).Scan(&exists.Exists)
+
+	return &exists, err
+}
+
+func (c *CollaborationRepo) ValidateInvitationId(invitationId string) (*pb.Exists, error) {
+
+	query := `
+	select
+      	case 
+        	when id = $1 then true
+      	else
+        	false
+      	end
+    from
+      	invitations
+	`
+	exists := pb.Exists{}
+	err := c.Db.QueryRow(query, invitationId).Scan(&exists.Exists)
+
+	return &exists, err
+}
+
 func (c *CollaborationRepo) RespondInvitation(collab *pb.CreateCollaboration) (*pb.ID, error) {
 	query := `
 	update 

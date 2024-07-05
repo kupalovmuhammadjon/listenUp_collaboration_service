@@ -27,6 +27,7 @@ type CommentsClient interface {
 	CreateCommentByEpisodeId(ctx context.Context, in *EpisodeComment, opts ...grpc.CallOption) (*ID, error)
 	GetCommentsByEpisodeId(ctx context.Context, in *CommentFilter, opts ...grpc.CallOption) (*AllComments, error)
 	CountComments(ctx context.Context, in *CountFilter, opts ...grpc.CallOption) (*CommentCount, error)
+	ValidateCommentId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Exists, error)
 }
 
 type commentsClient struct {
@@ -82,6 +83,15 @@ func (c *commentsClient) CountComments(ctx context.Context, in *CountFilter, opt
 	return out, nil
 }
 
+func (c *commentsClient) ValidateCommentId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Exists, error) {
+	out := new(Exists)
+	err := c.cc.Invoke(ctx, "/comments.Comments/ValidateCommentId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommentsServer is the server API for Comments service.
 // All implementations must embed UnimplementedCommentsServer
 // for forward compatibility
@@ -91,6 +101,7 @@ type CommentsServer interface {
 	CreateCommentByEpisodeId(context.Context, *EpisodeComment) (*ID, error)
 	GetCommentsByEpisodeId(context.Context, *CommentFilter) (*AllComments, error)
 	CountComments(context.Context, *CountFilter) (*CommentCount, error)
+	ValidateCommentId(context.Context, *ID) (*Exists, error)
 	mustEmbedUnimplementedCommentsServer()
 }
 
@@ -112,6 +123,9 @@ func (UnimplementedCommentsServer) GetCommentsByEpisodeId(context.Context, *Comm
 }
 func (UnimplementedCommentsServer) CountComments(context.Context, *CountFilter) (*CommentCount, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CountComments not implemented")
+}
+func (UnimplementedCommentsServer) ValidateCommentId(context.Context, *ID) (*Exists, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateCommentId not implemented")
 }
 func (UnimplementedCommentsServer) mustEmbedUnimplementedCommentsServer() {}
 
@@ -216,6 +230,24 @@ func _Comments_CountComments_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Comments_ValidateCommentId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommentsServer).ValidateCommentId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comments.Comments/ValidateCommentId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommentsServer).ValidateCommentId(ctx, req.(*ID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Comments_ServiceDesc is the grpc.ServiceDesc for Comments service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +274,10 @@ var Comments_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CountComments",
 			Handler:    _Comments_CountComments_Handler,
+		},
+		{
+			MethodName: "ValidateCommentId",
+			Handler:    _Comments_ValidateCommentId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

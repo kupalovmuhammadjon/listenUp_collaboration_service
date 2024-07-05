@@ -60,6 +60,24 @@ func (c *CommentRepo) CreateEpisodeComment(comment *pb.EpisodeComment) (string, 
 	return newId, err
 }
 
+func (c *CommentRepo) ValidateCommentId(commentId string) (*pb.Exists, error) {
+
+	query := `
+	select
+      	case 
+        	when id = $1 then true
+      	else
+        	false
+      	end
+    from
+      	comments
+	`
+	exists := pb.Exists{}
+	err := c.Db.QueryRow(query, commentId).Scan(&exists.Exists)
+
+	return &exists, err
+}
+
 func (c *CommentRepo) GetCommentsByPodcastId(filter *pb.CommentFilter) ([]*pb.CommentInfo, error) {
 	query := `
 	select

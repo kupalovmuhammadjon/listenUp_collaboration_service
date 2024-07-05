@@ -29,7 +29,6 @@ type CollaborationsClient interface {
 	DeleteCollaboratorByPodcastId(ctx context.Context, in *Ids, opts ...grpc.CallOption) (*Void, error)
 	GetAllPodcastsUsersWorkedOn(ctx context.Context, in *PodcastsId, opts ...grpc.CallOption) (*PodcastsId, error)
 	ValidateInvitationId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Exists, error)
-	ValidateCommentId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Exists, error)
 	ValidateCollaborationId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Exists, error)
 }
 
@@ -104,15 +103,6 @@ func (c *collaborationsClient) ValidateInvitationId(ctx context.Context, in *ID,
 	return out, nil
 }
 
-func (c *collaborationsClient) ValidateCommentId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Exists, error) {
-	out := new(Exists)
-	err := c.cc.Invoke(ctx, "/collaborations.Collaborations/ValidateCommentId", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *collaborationsClient) ValidateCollaborationId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Exists, error) {
 	out := new(Exists)
 	err := c.cc.Invoke(ctx, "/collaborations.Collaborations/ValidateCollaborationId", in, out, opts...)
@@ -133,7 +123,6 @@ type CollaborationsServer interface {
 	DeleteCollaboratorByPodcastId(context.Context, *Ids) (*Void, error)
 	GetAllPodcastsUsersWorkedOn(context.Context, *PodcastsId) (*PodcastsId, error)
 	ValidateInvitationId(context.Context, *ID) (*Exists, error)
-	ValidateCommentId(context.Context, *ID) (*Exists, error)
 	ValidateCollaborationId(context.Context, *ID) (*Exists, error)
 	mustEmbedUnimplementedCollaborationsServer()
 }
@@ -162,9 +151,6 @@ func (UnimplementedCollaborationsServer) GetAllPodcastsUsersWorkedOn(context.Con
 }
 func (UnimplementedCollaborationsServer) ValidateInvitationId(context.Context, *ID) (*Exists, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateInvitationId not implemented")
-}
-func (UnimplementedCollaborationsServer) ValidateCommentId(context.Context, *ID) (*Exists, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ValidateCommentId not implemented")
 }
 func (UnimplementedCollaborationsServer) ValidateCollaborationId(context.Context, *ID) (*Exists, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateCollaborationId not implemented")
@@ -308,24 +294,6 @@ func _Collaborations_ValidateInvitationId_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Collaborations_ValidateCommentId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ID)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CollaborationsServer).ValidateCommentId(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/collaborations.Collaborations/ValidateCommentId",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CollaborationsServer).ValidateCommentId(ctx, req.(*ID))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Collaborations_ValidateCollaborationId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ID)
 	if err := dec(in); err != nil {
@@ -378,10 +346,6 @@ var Collaborations_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidateInvitationId",
 			Handler:    _Collaborations_ValidateInvitationId_Handler,
-		},
-		{
-			MethodName: "ValidateCommentId",
-			Handler:    _Collaborations_ValidateCommentId_Handler,
 		},
 		{
 			MethodName: "ValidateCollaborationId",
