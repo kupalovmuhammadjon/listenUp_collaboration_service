@@ -61,7 +61,7 @@ func TestCreateEpisodeComment(t *testing.T) {
 func TestGetCommentsByPodcastId(t *testing.T){
 	c := newCommentRepoTest()
 
-	req := pb.ID{
+	req := pb.CommentFilter{
 		Id: "604821bc-c777-4a7e-8f77-4dc783c5a856",
 	}
 	comments, err := c.GetCommentsByPodcastId(&req)
@@ -76,7 +76,7 @@ func TestGetCommentsByPodcastId(t *testing.T){
 func TestGetCommentsByEpisodeId(t *testing.T){
 	c := newCommentRepoTest()
 
-	req := pb.ID{
+	req := pb.CommentFilter{
 		Id: "604821bc-c777-4a7e-8f77-4dc783c5a856",
 	}
 	comments, err := c.GetCommentsByEpisodeId(&req)

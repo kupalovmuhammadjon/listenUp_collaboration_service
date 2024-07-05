@@ -37,8 +37,8 @@ func (c *Comments) CreateCommentByEpisodeId(ctx context.Context, epComment *pb.E
 	return &pb.ID{Id: id}, err
 }
 
-func (c *Comments) GetCommentsByPodcastId(ctx context.Context, id *pb.ID) (*pb.AllComments, error) {
-	commentInfo, err := c.Repo.GetCommentsByPodcastId(id)
+func (c *Comments) GetCommentsByPodcastId(ctx context.Context, filter *pb.CommentFilter) (*pb.AllComments, error) {
+	commentInfo, err := c.Repo.GetCommentsByPodcastId(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -58,8 +58,8 @@ func (c *Comments) GetCommentsByPodcastId(ctx context.Context, id *pb.ID) (*pb.A
 	return &allComments, nil
 }
 
-func (c *Comments) GetCommentsByEpisodeId(ctx context.Context, id *pb.ID) (*pb.AllComments, error) {
-	commentInfo, err := c.Repo.GetCommentsByEpisodeId(id)
+func (c *Comments) GetCommentsByEpisodeId(ctx context.Context, filter *pb.CommentFilter) (*pb.AllComments, error) {
+	commentInfo, err := c.Repo.GetCommentsByEpisodeId(filter)
 	if err != nil {
 		return nil, err
 	}

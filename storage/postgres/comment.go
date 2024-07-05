@@ -60,7 +60,7 @@ func (c *CommentRepo) CreateEpisodeComment(comment *pb.EpisodeComment) (string, 
 	return newId, err
 }
 
-func (c *CommentRepo) GetCommentsByPodcastId(id *pb.ID) ([]*pb.CommentInfo, error) {
+func (c *CommentRepo) GetCommentsByPodcastId(filter *pb.CommentFilter) ([]*pb.CommentInfo, error) {
 	query := `
 	select
 		user_id,
@@ -71,9 +71,11 @@ func (c *CommentRepo) GetCommentsByPodcastId(id *pb.ID) ([]*pb.CommentInfo, erro
 	    comments
 	where
 	    podcast_id = $1 and deleted_at is null
+	limit $2
+	offset $3
 `
 	comments := []*pb.CommentInfo{}
-	rows, err := c.Db.Query(query, id.Id)
+	rows, err := c.Db.Query(query, filter.Id, filter.Limit, filter.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +94,7 @@ func (c *CommentRepo) GetCommentsByPodcastId(id *pb.ID) ([]*pb.CommentInfo, erro
 	return comments, nil
 }
 
-func (c *CommentRepo) GetCommentsByEpisodeId(id *pb.ID) ([]*pb.CommentInfo, error) {
+func (c *CommentRepo) GetCommentsByEpisodeId(filter *pb.CommentFilter) ([]*pb.CommentInfo, error) {
 	query := `
 	select
 		user_id,
@@ -103,9 +105,11 @@ func (c *CommentRepo) GetCommentsByEpisodeId(id *pb.ID) ([]*pb.CommentInfo, erro
 	    comments
 	where
 	    episode_id = $1 and deleted_at is null
+	limit $2
+	offset $3
 `
 	comments := []*pb.CommentInfo{}
-	rows, err := c.Db.Query(query, id.Id)
+	rows, err := c.Db.Query(query, filter.Id, filter.Limit, filter.Offset)
 	if err != nil {
 		return nil, err
 	}
