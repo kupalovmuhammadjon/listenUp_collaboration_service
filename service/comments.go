@@ -1,37 +1,63 @@
 package service
 
 import (
+	"collaboration_service/config"
 	pb "collaboration_service/genproto/comments"
+	pbp "collaboration_service/genproto/podcasts"
+	pbe "collaboration_service/genproto/episodes"
 	pbu "collaboration_service/genproto/user"
 	"collaboration_service/pkg"
 	"collaboration_service/storage/postgres"
 	"context"
 	"database/sql"
-	"log"
+	"fmt"
 )
 
 type Comments struct {
 	pb.UnimplementedCommentsServer
-	Repo       *postgres.CommentRepo
-	UserClient pbu.UserManagementClient
+	Repo          *postgres.CommentRepo
+	UserClient    pbu.UserManagementClient
+	PodcastClient pbp.PodcastsClient
+	EpisodeClient pbe.EpisodesServiceClient
 }
 
-func NewComments(db *sql.DB) *Comments {
-	client, err := pkg.CreateUserManagementClient()
-	if err != nil {
-		log.Fatal(err)
-	}
-
+func NewComments(db *sql.DB, cfg *config.Config) *Comments {
+	client := pkg.CreateUserManagementClient(cfg)
+	pClient := pkg.NewPodcastsClient(cfg)
+	eClient := pkg.NewEpisodesClient(cfg)
 	comments := postgres.NewCommentRepo(db)
-	return &Comments{Repo: comments, UserClient: client}
+	return &Comments{
+		Repo:          comments,
+		UserClient:    client,
+		PodcastClient: pClient,
+		EpisodeClient: eClient,
+	}
 }
 
 func (c *Comments) CreateCommentByPodcastId(ctx context.Context, comment *pb.CreateComment) (*pb.ID, error) {
+	exists, err := c.UserClient.ValidateUserId(ctx, &pbu.ID{Id: comment.UserId})
+	if err != nil || !exists.Success {
+		return nil, fmt.Errorf("error while validating user id %v", err)
+	}
+	s, err := c.PodcastClient.ValidatePodcastId(ctx, &pbp.ID{Id: comment.PodcastId})
+	if err != nil || !s.Success {
+		return nil, fmt.Errorf("error while validating podcast id %v", err)
+	}
+
 	id, err := c.Repo.CreateCommentByPodcastId(comment)
 	return id, err
 }
 
 func (c *Comments) CreateCommentByEpisodeId(ctx context.Context, epComment *pb.EpisodeComment) (*pb.ID, error) {
+	exists, err := c.UserClient.ValidateUserId(ctx, &pbu.ID{Id: epComment.UserId})
+	if err != nil || !exists.Success {
+		return nil, fmt.Errorf("error while validating user id %v", err)
+	}
+	s, err := c.EpisodeClient.ValidateEpisodeId(ctx, &pbe.ID{Id: epComment.EpisodeId})
+	if err != nil || !s.Success {
+		return nil, fmt.Errorf("error while validating episode id %v", err)
+	}
+
 	id, err := c.Repo.CreateEpisodeComment(epComment)
 
 	return &pb.ID{Id: id}, err

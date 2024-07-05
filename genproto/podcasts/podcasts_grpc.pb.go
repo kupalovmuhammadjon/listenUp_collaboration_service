@@ -27,7 +27,8 @@ type PodcastsClient interface {
 	UpdatePodcast(ctx context.Context, in *PodcastUpdate, opts ...grpc.CallOption) (*Void, error)
 	DeletePodcast(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Void, error)
 	GetUserPodcasts(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*UserPodcasts, error)
-	ValidateEpisodetId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error)
+	PublishPodcast(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error)
+	ValidatePodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error)
 }
 
 type podcastsClient struct {
@@ -83,9 +84,18 @@ func (c *podcastsClient) GetUserPodcasts(ctx context.Context, in *Filter, opts .
 	return out, nil
 }
 
-func (c *podcastsClient) ValidateEpisodetId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error) {
+func (c *podcastsClient) PublishPodcast(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error) {
 	out := new(Success)
-	err := c.cc.Invoke(ctx, "/podcasts.Podcasts/ValidateEpisodetId", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/podcasts.Podcasts/PublishPodcast", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *podcastsClient) ValidatePodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error) {
+	out := new(Success)
+	err := c.cc.Invoke(ctx, "/podcasts.Podcasts/ValidatePodcastId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +111,8 @@ type PodcastsServer interface {
 	UpdatePodcast(context.Context, *PodcastUpdate) (*Void, error)
 	DeletePodcast(context.Context, *ID) (*Void, error)
 	GetUserPodcasts(context.Context, *Filter) (*UserPodcasts, error)
-	ValidateEpisodetId(context.Context, *ID) (*Success, error)
+	PublishPodcast(context.Context, *ID) (*Success, error)
+	ValidatePodcastId(context.Context, *ID) (*Success, error)
 	mustEmbedUnimplementedPodcastsServer()
 }
 
@@ -124,8 +135,11 @@ func (UnimplementedPodcastsServer) DeletePodcast(context.Context, *ID) (*Void, e
 func (UnimplementedPodcastsServer) GetUserPodcasts(context.Context, *Filter) (*UserPodcasts, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserPodcasts not implemented")
 }
-func (UnimplementedPodcastsServer) ValidateEpisodetId(context.Context, *ID) (*Success, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ValidateEpisodetId not implemented")
+func (UnimplementedPodcastsServer) PublishPodcast(context.Context, *ID) (*Success, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PublishPodcast not implemented")
+}
+func (UnimplementedPodcastsServer) ValidatePodcastId(context.Context, *ID) (*Success, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidatePodcastId not implemented")
 }
 func (UnimplementedPodcastsServer) mustEmbedUnimplementedPodcastsServer() {}
 
@@ -230,20 +244,38 @@ func _Podcasts_GetUserPodcasts_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Podcasts_ValidateEpisodetId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Podcasts_PublishPodcast_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ID)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PodcastsServer).ValidateEpisodetId(ctx, in)
+		return srv.(PodcastsServer).PublishPodcast(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/podcasts.Podcasts/ValidateEpisodetId",
+		FullMethod: "/podcasts.Podcasts/PublishPodcast",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PodcastsServer).ValidateEpisodetId(ctx, req.(*ID))
+		return srv.(PodcastsServer).PublishPodcast(ctx, req.(*ID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Podcasts_ValidatePodcastId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PodcastsServer).ValidatePodcastId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/podcasts.Podcasts/ValidatePodcastId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PodcastsServer).ValidatePodcastId(ctx, req.(*ID))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -276,8 +308,12 @@ var Podcasts_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Podcasts_GetUserPodcasts_Handler,
 		},
 		{
-			MethodName: "ValidateEpisodetId",
-			Handler:    _Podcasts_ValidateEpisodetId_Handler,
+			MethodName: "PublishPodcast",
+			Handler:    _Podcasts_PublishPodcast_Handler,
+		},
+		{
+			MethodName: "ValidatePodcastId",
+			Handler:    _Podcasts_ValidatePodcastId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

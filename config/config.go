@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	COLLABORATION_SERVICE_PORT string
+	PODCAST_SERVICE_PORT       string
 	USER_SERVICE_PORT          string
 	DB_HOST                    string
 	DB_PORT                    string

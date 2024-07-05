@@ -26,8 +26,8 @@ type EpisodesServiceClient interface {
 	GetEpisodesByPodcastId(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Episodes, error)
 	UpdateEpisode(ctx context.Context, in *IDs, opts ...grpc.CallOption) (*Void, error)
 	DeleteEpisode(ctx context.Context, in *IDsForDelete, opts ...grpc.CallOption) (*Void, error)
-	PublishPodcast(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error)
-	ValidatePodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error)
+	SearchEpisodeByTitle(ctx context.Context, in *Title, opts ...grpc.CallOption) (*Episode, error)
+	ValidateEpisodeId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error)
 }
 
 type episodesServiceClient struct {
@@ -74,18 +74,18 @@ func (c *episodesServiceClient) DeleteEpisode(ctx context.Context, in *IDsForDel
 	return out, nil
 }
 
-func (c *episodesServiceClient) PublishPodcast(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error) {
-	out := new(Success)
-	err := c.cc.Invoke(ctx, "/episodes.EpisodesService/PublishPodcast", in, out, opts...)
+func (c *episodesServiceClient) SearchEpisodeByTitle(ctx context.Context, in *Title, opts ...grpc.CallOption) (*Episode, error) {
+	out := new(Episode)
+	err := c.cc.Invoke(ctx, "/episodes.EpisodesService/SearchEpisodeByTitle", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *episodesServiceClient) ValidatePodcastId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error) {
+func (c *episodesServiceClient) ValidateEpisodeId(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Success, error) {
 	out := new(Success)
-	err := c.cc.Invoke(ctx, "/episodes.EpisodesService/ValidatePodcastId", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/episodes.EpisodesService/ValidateEpisodeId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -100,8 +100,8 @@ type EpisodesServiceServer interface {
 	GetEpisodesByPodcastId(context.Context, *Filter) (*Episodes, error)
 	UpdateEpisode(context.Context, *IDs) (*Void, error)
 	DeleteEpisode(context.Context, *IDsForDelete) (*Void, error)
-	PublishPodcast(context.Context, *ID) (*Success, error)
-	ValidatePodcastId(context.Context, *ID) (*Success, error)
+	SearchEpisodeByTitle(context.Context, *Title) (*Episode, error)
+	ValidateEpisodeId(context.Context, *ID) (*Success, error)
 	mustEmbedUnimplementedEpisodesServiceServer()
 }
 
@@ -121,11 +121,11 @@ func (UnimplementedEpisodesServiceServer) UpdateEpisode(context.Context, *IDs) (
 func (UnimplementedEpisodesServiceServer) DeleteEpisode(context.Context, *IDsForDelete) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEpisode not implemented")
 }
-func (UnimplementedEpisodesServiceServer) PublishPodcast(context.Context, *ID) (*Success, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PublishPodcast not implemented")
+func (UnimplementedEpisodesServiceServer) SearchEpisodeByTitle(context.Context, *Title) (*Episode, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchEpisodeByTitle not implemented")
 }
-func (UnimplementedEpisodesServiceServer) ValidatePodcastId(context.Context, *ID) (*Success, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ValidatePodcastId not implemented")
+func (UnimplementedEpisodesServiceServer) ValidateEpisodeId(context.Context, *ID) (*Success, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateEpisodeId not implemented")
 }
 func (UnimplementedEpisodesServiceServer) mustEmbedUnimplementedEpisodesServiceServer() {}
 
@@ -212,38 +212,38 @@ func _EpisodesService_DeleteEpisode_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _EpisodesService_PublishPodcast_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ID)
+func _EpisodesService_SearchEpisodeByTitle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Title)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EpisodesServiceServer).PublishPodcast(ctx, in)
+		return srv.(EpisodesServiceServer).SearchEpisodeByTitle(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/episodes.EpisodesService/PublishPodcast",
+		FullMethod: "/episodes.EpisodesService/SearchEpisodeByTitle",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EpisodesServiceServer).PublishPodcast(ctx, req.(*ID))
+		return srv.(EpisodesServiceServer).SearchEpisodeByTitle(ctx, req.(*Title))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _EpisodesService_ValidatePodcastId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _EpisodesService_ValidateEpisodeId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ID)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EpisodesServiceServer).ValidatePodcastId(ctx, in)
+		return srv.(EpisodesServiceServer).ValidateEpisodeId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/episodes.EpisodesService/ValidatePodcastId",
+		FullMethod: "/episodes.EpisodesService/ValidateEpisodeId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EpisodesServiceServer).ValidatePodcastId(ctx, req.(*ID))
+		return srv.(EpisodesServiceServer).ValidateEpisodeId(ctx, req.(*ID))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -272,12 +272,12 @@ var EpisodesService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _EpisodesService_DeleteEpisode_Handler,
 		},
 		{
-			MethodName: "PublishPodcast",
-			Handler:    _EpisodesService_PublishPodcast_Handler,
+			MethodName: "SearchEpisodeByTitle",
+			Handler:    _EpisodesService_SearchEpisodeByTitle_Handler,
 		},
 		{
-			MethodName: "ValidatePodcastId",
-			Handler:    _EpisodesService_ValidatePodcastId_Handler,
+			MethodName: "ValidateEpisodeId",
+			Handler:    _EpisodesService_ValidateEpisodeId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

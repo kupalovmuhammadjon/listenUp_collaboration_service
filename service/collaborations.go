@@ -1,32 +1,51 @@
 package service
 
 import (
+	"collaboration_service/config"
 	pb "collaboration_service/genproto/collaborations"
+	pbp "collaboration_service/genproto/podcasts"
 	pbu "collaboration_service/genproto/user"
 	"collaboration_service/pkg"
 	"collaboration_service/storage/postgres"
 	"context"
 	"database/sql"
-	"log"
+	"fmt"
 )
 
 type Collaborations struct {
 	pb.UnimplementedCollaborationsServer
-	Repo       *postgres.CollaborationRepo
-	UserClient pbu.UserManagementClient
+	Repo          *postgres.CollaborationRepo
+	UserClient    pbu.UserManagementClient
+	PodcastClient pbp.PodcastsClient
 }
 
-func NewCollaborations(db *sql.DB) *Collaborations {
-	client, err := pkg.CreateUserManagementClient()
-	if err != nil {
-		log.Fatal(err)
-	}
+func NewCollaborations(db *sql.DB, cfg *config.Config) *Collaborations {
+	client := pkg.CreateUserManagementClient(cfg)
+	pClient := pkg.NewPodcastsClient(cfg)
 
 	collaborations := postgres.NewCollaborationRepo(db)
-	return &Collaborations{Repo: collaborations, UserClient: client}
+	return &Collaborations{
+		Repo:          collaborations,
+		UserClient:    client,
+		PodcastClient: pClient,
+	}
 }
 
 func (c *Collaborations) CreateInvitation(ctx context.Context, invitation *pb.CreateInvite) (*pb.ID, error) {
+
+	exists, err := c.UserClient.ValidateUserId(ctx, &pbu.ID{Id: invitation.InviteeId})
+	if err != nil || !exists.Success {
+		return nil, fmt.Errorf("error while validating user id %v", err)
+	}
+	exists, err = c.UserClient.ValidateUserId(ctx, &pbu.ID{Id: invitation.InviterId})
+	if err != nil || !exists.Success {
+		return nil, fmt.Errorf("error while validating user id %v", err)
+	}
+	s, err := c.PodcastClient.ValidatePodcastId(ctx, &pbp.ID{Id: invitation.PodcastId})
+	if err != nil || !s.Success {
+		return nil, fmt.Errorf("error while validating podcast id %v", err)
+	}
+
 	id, err := c.Repo.CreateInvitation(invitation)
 	if err != nil {
 		return nil, err
