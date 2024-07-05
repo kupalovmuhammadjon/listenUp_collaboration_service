@@ -17,9 +17,8 @@ func CreateUserManagementClient(cfg *config.Config) pbu.UserManagementClient {
 	if err != nil {
 		log.Println(errors.New("failed to connect to the address: " + err.Error()))
 	}
-	defer conn.Close()
-
 	u := pbu.NewUserManagementClient(conn)
+	
 	return u
 }
 
