@@ -26,11 +26,12 @@ func main() {
 	}
 
 	server := grpc.NewServer()
-	cfg := config.Load()
-	pbCollab.RegisterCollaborationsServer(server, service.NewCollaborations(db, cfg))
-	pbCom.RegisterCommentsServer(server, service.NewComments(db, cfg))
+	config := config.Load()
+	
+	pbCollab.RegisterCollaborationsServer(server, service.NewCollaborations(db, config))
+	pbCom.RegisterCommentsServer(server, service.NewComments(db, config))
 
-	fmt.Printf("server is listening on port %s", config.Load().COLLABORATION_SERVICE_PORT)
+	fmt.Printf("server is listening on port %s", config.COLLABORATION_SERVICE_PORT)
 	if err := server.Serve(lis); err != nil {
 		log.Fatal(err)
 	}

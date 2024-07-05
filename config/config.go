@@ -27,7 +27,8 @@ func Load() *Config {
 	config := Config{}
 
 	config.COLLABORATION_SERVICE_PORT = cast.ToString(coalesce("COLLABORATION_SERVICE_PORT", ":50051"))
-	config.USER_SERVICE_PORT = cast.ToString(coalesce("USER_SERVICE_PORT", ":50052"))
+	config.PODCAST_SERVICE_PORT = cast.ToString(coalesce("PODCAST_SERVICE_PORT", ":50052"))
+	config.USER_SERVICE_PORT = cast.ToString(coalesce("USER_SERVICE_PORT", ":50053"))
 	config.DB_HOST = cast.ToString(coalesce("DB_HOST", "localhost"))
 	config.DB_PORT = cast.ToString(coalesce("DB_PORT", "5432"))
 	config.DB_USER = cast.ToString(coalesce("DB_USER", "postgres"))
