@@ -103,20 +103,15 @@ func (c *CollaborationRepo) DeleteCollaboratorByPodcastId(ids *pb.Ids) (*pb.Void
 	set
 		deleted_at = now()
 	where 
-		and deleted_at is null`
+		podcast_id = $1 and user_id = $2 and deleted_at is null
+	`
 
 	tr, err := c.Db.Begin()
 	if err != nil {
 		return nil, err
 	}
 
-	defer func() {
-		if err != nil {
-			tr.Rollback()
-		} else {
-			tr.Commit()
-		}
-	}()
+	defer tr.Commit()
 
 	_, err = tr.Exec(query, ids.PodcastId, ids.UserId)
 	if err != nil {
@@ -160,6 +155,8 @@ func (c *CollaborationRepo) ValidateCollaborationId(collaborationsId string) (*p
       	end
     from
       	collaborations
+	where
+		id = $1 and deleted_at is null
 	`
 	exists := pb.Exists{}
 	err := c.Db.QueryRow(query, collaborationsId).Scan(&exists.Exists)
@@ -178,6 +175,8 @@ func (c *CollaborationRepo) ValidateInvitationId(invitationId string) (*pb.Exist
       	end
     from
       	invitations
+	where
+		id = $1 and deleted_at is null
 	`
 	exists := pb.Exists{}
 	err := c.Db.QueryRow(query, invitationId).Scan(&exists.Exists)

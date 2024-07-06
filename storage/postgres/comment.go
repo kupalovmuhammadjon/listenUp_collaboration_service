@@ -71,6 +71,8 @@ func (c *CommentRepo) ValidateCommentId(commentId string) (*pb.Exists, error) {
       	end
     from
       	comments
+	where
+		id = $1 and deleted_at is null
 	`
 	exists := pb.Exists{}
 	err := c.Db.QueryRow(query, commentId).Scan(&exists.Exists)
@@ -155,27 +157,23 @@ func (c *CommentRepo) CountComments(filter *pb.CountFilter) (*pb.CommentCount, e
 	where
 	    deleted_at IS NULL 
 `
-	paramCount := 0
+	paramCount := 1
 	params := []interface{}{}
-	if len(filter.PodcastId) == 32 {
+	if len(filter.PodcastId) > 0{
 		query += fmt.Sprintf(" and podcast_id = $%d", paramCount)
 		paramCount++
 		params = append(params, filter.PodcastId)
-	}
-	if len(filter.EpisodeId) == 32 {
+	}else{ 
 		query += fmt.Sprintf(" and episode_id = $%d", paramCount)
 		paramCount++
-		params = append(params, filter.EpisodeId)
+		params = append(params, filter.PodcastId)
 	}
 
-	row, err := c.Db.Query(query, params...)
-	if err != nil {
-		return nil, err
-	}
-	defer row.Close()
+	row := c.Db.QueryRow(query, params...)
+
 
 	count := pb.CommentCount{}
-	err = row.Scan(&count.Count)
+	err := row.Scan(&count.Count)
 
 	return &count, err
 }

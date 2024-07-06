@@ -65,13 +65,18 @@ func (c *Collaborations) RespondInvitation(ctx context.Context, req *pb.CreateCo
 func (c *Collaborations) GetCollaboratorsByPodcastId(ctx context.Context, id *pb.ID) (*pb.Collaborators, error) {
 	res := pb.Collaborators{}
 
+	s, err := c.PodcastClient.ValidatePodcastId(ctx, &pbp.ID{Id: id.Id})
+	if err != nil || !s.Success {
+		return nil, fmt.Errorf("error while validating podcast id %v", err)
+	}
+
 	collaboratorsId, err := c.Repo.GetCollaboratorsByPodcastId(id.Id)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, col := range collaboratorsId {
-		userInfo, err := c.UserClient.GetUserByID(context.Background(), &pbu.ID{Id: col.UserId})
+		userInfo, err := c.UserClient.GetUserByID(ctx, &pbu.ID{Id: col.UserId})
 		if err != nil {
 			return nil, err
 		}
