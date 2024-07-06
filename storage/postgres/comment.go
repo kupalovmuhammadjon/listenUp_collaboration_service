@@ -71,6 +71,8 @@ func (c *CommentRepo) ValidateCommentId(commentId string) (*pb.Exists, error) {
       	end
     from
       	comments
+	where
+		id = $1 and deleted_at is null
 	`
 	exists := pb.Exists{}
 	err := c.Db.QueryRow(query, commentId).Scan(&exists.Exists)
