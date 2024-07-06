@@ -302,3 +302,26 @@ func (c *CollaborationRepo) GetPodcastsIdByCollaboratorsId(colaboratorsId *[]str
 
 	return &res, nil
 }
+
+func (c *CollaborationRepo) CreateOwner(collab *pb.CreateAsOwner) (string, error) {
+	query := `
+	insert into 
+	  	collaborations (id, podcast_id, user_id, role)
+	values ($1, $2, $3, $4)
+	`
+	tx, err := c.Db.Begin()
+	if err != nil {
+		return "", err
+	}
+	id := uuid.NewString()
+	_, err = tx.Exec(query, id, collab.PodcastId, collab.UserId, collab.Role)
+	if err != nil {
+		tx.Rollback()
+		return "", err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}

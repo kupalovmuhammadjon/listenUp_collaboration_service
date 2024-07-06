@@ -127,3 +127,12 @@ func (c *Collaborations) GetAllPodcastsUsersWorkedOn(ctx context.Context, podcas
 	podcastsIdToReturn, err := c.Repo.GetPodcastsIdByCollaboratorsId(colaborators)
 	return &pb.PodcastsId{PodcastsId: *podcastsIdToReturn}, err
 }
+
+func (c *Collaborations) CreateOwner(ctx context.Context, collab *pb.CreateAsOwner) (*pb.ID, error) {
+	colaborators, err := c.Repo.CreateOwner(collab)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ID{Id: colaborators}, err
+}
