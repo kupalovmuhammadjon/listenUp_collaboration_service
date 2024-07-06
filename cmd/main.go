@@ -26,8 +26,8 @@ func main() {
 	}
 
 	server := grpc.NewServer()
-
 	config := config.Load()
+	
 	pbCollab.RegisterCollaborationsServer(server, service.NewCollaborations(db, config))
 	pbCom.RegisterCommentsServer(server, service.NewComments(db, config))
 
